@@ -5,6 +5,9 @@
 % ------------------------------------------------------------------------------
 \input{relat_layout.tex}
 
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes,automata,petri,positioning}
+
 %\usepackage{circuitikz}
 \usepackage[clean]{svg}
 
@@ -14,6 +17,29 @@
 % Definições Auxiliares ( Macros próprias )
 % ------------------------------------------------------------------------------
 %\input{relat_aux.tex} % Arquivo com minhas macros
+\tikzset{
+    place/.style={
+        circle,
+        thick,
+        draw=blue!75,
+        fill=blue!20,
+        minimum size=6mm,
+    },
+    transitionH/.style={
+        rectangle,
+        thick,
+        fill=black,
+        minimum width=8mm,
+        inner ysep=2pt
+    },
+    transitionV/.style={
+        rectangle,
+        thick,
+        fill=black,
+        minimum height=8mm,
+        inner xsep=2pt
+    }
+}
 % ----------------------------------~>ø<~---------------------------------------
 \begin{document}
 % Capa e Índice ----------------------------------------------------------------
@@ -22,7 +48,110 @@
 
 \section{Objetivos}
 
+Implementação de sistema automático para controle de nível de um buffer em que é acionado um motor de forma automática quando for detectado que o mesmo esteja vazio.
+
 \section{Desenvolvimento}
+
+\subsection{Modelagem por Máquina de Estados Finitos}
+
+\subsubsection{Levantamento Estados e Eventos}
+
+A partir da descrição do sistema proposto temos as seguintes entradas e acionamentos
+
+\begin{itemize}
+    \item Acionamentos
+    \begin{itemize}
+        \item Motor ( Desligar, Giro em sentido horário e Giro em Sentido Anti-horário )
+        \item Sinalização Motor: Duas Luzes
+        \item Sinalização Buffer: Duas Luzes
+    \end{itemize}
+    \item Entradas
+    \begin{itemize}
+        \item Botoeira Liga
+        \item Botoeira Desliga
+        \item Botoeira Parada de Emergência
+        \item Sensor de Nível
+        \item Chave Seletora para o sentido do Motor
+    \end{itemize}
+\end{itemize}
+
+A partir desta descrição foi adotado a modelagem por máquina de estados. Cada alterações no estado dos dispositivos de entrada foi associado a um evento e os conjunto de comandos nos dispositivos de Acionamentos referente a uma ação do sistema foram agrupados como estados.
+
+Do ponto de vista de comportamento macro do sistema podemos descrever o sistema seguinte forma:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|cc}
+        \hline
+        Estado & $L_{s_2}$ & $S_{nivel}$ \\
+        \hline
+        Desligado & Desligado & - \\
+        Buffer Cheio & Desligado & $1$\\
+        Buffer Vazio & Piscando & $1$\\
+        \hline
+    \end{tabular}
+    \caption{Caption}
+    \label{tab:states_buffer}
+\end{table}
+
+A partir da tabela \ref{tab:states_buffer} podemos representar o comportamento buffer associado a leitura do sensor como
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{src/tex/img/automato_buffer.png}
+    \caption{Caption}
+    \label{fig:automato_buffer}
+\end{figure}
+
+Por outro lado do ponto de vista de controle do motor temos:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|cccl}
+        \hline
+        Estado & $L_{s_1}$ & $L_{m_1}$ & $L_{m_2}$ & Motor \\
+        \hline
+        Motor Desligado & $0$ & $0$ & $0$ & Desligado\\
+        Ligado Sentido Horário & $1$ & $1$ & $0$ & Desligado\\
+        Ligado Sentido Anti-Horário & $1$ & $0$ & $1$ & Desligado\\
+    \end{tabular}
+    \caption{Caption}
+    \label{tab:states_motor}
+\end{table}
+
+A partir da tabela \ref{tab:states_motor} podemos o comportamento desejado do motor como
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{src/tex/img/automato_motor.png}
+    \caption{Caption}
+    \label{fig:automato_motor}
+\end{figure}
+
+\subsection{Modelagem por Rede de Petri}
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[node distance=0.5cm and 1cm,>=stealth',bend angle=45,auto]
+        \node [place,label=above:$P_1$] (p1) {};
+        \node [transitionV,label=above:$T_1$] (t1) [right= of p1] {}
+            edge[pre]   (p1);
+        \node [place,tokens=1,label=above:$P_2$] (p2) [above right=of t1] {}
+            edge[pre]   (t1);
+        \node [place,tokens=2,label=above:$P_3$] (p3) [below right=of t1] {}
+            edge[pre]   (t1);
+        \node [transitionV,label=above:$T_2$] (t2) [above right=of p3] {}
+            edge[pre]   (p2)
+            edge[pre]   (p3)
+            edge[post,out=-110,in=-50,looseness=2,overlay]  (p1);
+        \node [place,tokens=1, label=above:$P_4$] (p4) [above right=of t2] {}
+            edge[pre]   (t2);
+    \end{tikzpicture}
+    \caption{Caption}
+    \label{fig:my_label}
+\end{figure}
+
+\subsection{Modelagem em Ladder}
 
 \section{Conclusão}
 
