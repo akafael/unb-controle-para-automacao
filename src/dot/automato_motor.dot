@@ -1,12 +1,12 @@
 digraph G {
-    MotorOff [label = "Desligado"]
+    MotorOff [label = "Motor Desligado"]
 	MotorA [label = "Ligado Sentido Horário"]
 	MotorB [label = "Ligado Sentido Antihorário"]
     
-    MotorOff -> MotorA [label = "Buffer Vazio"]
+    MotorOff -> MotorA [label = "Sensor = 0"]
 
-    MotorA -> MotorB [label = "Chave B"]
-    MotorB -> MotorA [label = "Chave A"]
+    MotorA -> MotorB [label = "Chave em B"]
+    MotorB -> MotorA [label = "Chave em A"]
 
     MotorA -> MotorOff [label = "Botão Emergência"]
     MotorB -> MotorOff [label = "Botão Emergência"]

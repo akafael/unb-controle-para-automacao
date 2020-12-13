@@ -12,9 +12,12 @@
 DOT = dot
 OCTAVE = octave
 MATLAB = matlab -nodesktop -nosplash
+TEX = pdflatex
+TEXFLAGS = --enable-write18 --shell-escape
 
 # Directories ------------------------------------------------------------------
 
+LATEXDIR = src/tex
 FIGDIR = src/tex/img
 DOTDIR = src/dot
 MATLABDIR = src/matlab
@@ -22,8 +25,12 @@ MATLABDIR = src/matlab
 # Target Files -----------------------------------------------------------------
 
 # Dot stuff
-DOTFILES = $(wildcard $(DOTDIR)/*.dot)
+DOTFILES = $(wildcard $(DOTDIR)/*.dot) $(DOTDIR)/petrinet_tree.dot
 PICFILES = $(addprefix $(FIGDIR)/,$(notdir $(DOTFILES:%.dot=%.png)))
+
+# LaTeX
+TEXSRC = $(wildcard $(LATEXDIR)/project.tex)
+PDFOUTPUT = $(TEXSRC:.tex=.pdf)
 
 ###############################################################################
 # Rules 
@@ -54,6 +61,30 @@ $(FIGDIR)/%.png: $(DOTDIR)/%.dot
 
 # Simulation Scripts -----------------------------------------------------------
 
-petrinetproject: $(MATLABDIR)/petrinetproject.m
-	cd $(dir $<) && $(MATLAB) -sd $(dir $<) < $(notdir $<)
+$(DOTDIR)/petrinet_tree.dot: $(MATLABDIR)/petrinetproject.m
+	cd $(dir $<) && $(MATLAB) -sd $(dir $<) -r "$(basename $(notdir $<)); quit"
+
+# LaTeX Reports ---------------------------------------------------------------
+
+# Generate Report
+.PHONY: report
+report: $(PDFOUTPUT)
+
+# Implicity Rule to Compile texfile
+$(LATEXDIR)/%.pdf: $(LATEXDIR)/%.tex | $(PICFILES) 
+	cd $(dir $<) && $(TEX) $(TEXFLAGS) $(notdir $<)
+	cd $(dir $<) && bibtex $(basename $(notdir $<))
+	cd $(dir $<) && $(TEX) $(TEXFLAGS) $(notdir $<)
+
+# Remove LaTeX Temporary files
+.PHONY: clean-tex
+clean-tex:
+	rm -fv src/tex/*.aux src/tex/*.bbl src/tex/*.blg src/tex/*.log src/tex/*.idx src/tex/*.out src/tex/*.nav src/tex/*.snm src/tex/*.toc src/tex/*.vrb
+
+# Remove Generated PDF Files
+.PHONY = clean-pdf
+clean-pdf: clean-tex
+	rm -fv ${PDFOUTPUT}
+
+
 
