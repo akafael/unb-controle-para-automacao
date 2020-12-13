@@ -1,0 +1,8 @@
+digraph G {
+	BufferOk [label = "Buffer OK"]
+	BufferVazio [label = "Buffer Vazio"]
+
+    BufferOk -> BufferVazio [label = "Buffer Vazio"]
+    BufferVazio -> BufferOk [label = "Buffer Cheio"]
+}
+
