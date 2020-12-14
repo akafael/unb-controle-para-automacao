@@ -134,7 +134,7 @@ A partir da tabela \ref{tab:states_motor} podemos o comportamento desejado do mo
     \begin{tikzpicture}[node distance=0.5cm and 1cm,>=stealth',bend angle=45,auto]
         \node [place,label=above:$P_1$] (p1) {};
         \node [transitionV,label=above:$T_1$] (t1) [right= of p1] {}
-            edge[pre]   (p1);
+            edge[name=t1]   (p1);
         \node [place,tokens=1,label=above:$P_2$] (p2) [above right=of t1] {}
             edge[pre]   (t1);
         \node [place,tokens=2,label=above:$P_3$] (p3) [below right=of t1] {}
