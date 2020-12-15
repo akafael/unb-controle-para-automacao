@@ -86,5 +86,13 @@ clean-tex:
 clean-pdf: clean-tex
 	rm -fv ${PDFOUTPUT}
 
+# C Files -----------------------------------------------------------------------
 
+# Compile and Test C Project
+.PHONY:
+automato: src/c/project
+	./$<
 
+# Implicity Rule for all C source files
+%:%.c
+	gcc -o $@ $<

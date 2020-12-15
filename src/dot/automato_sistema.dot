@@ -1,0 +1,19 @@
+digraph G {
+    SistemaDesligado [label = "Sistema Desligado"]
+    SistemaLigado [label = "Sistema Ligado"]
+    SistemaSeguro [label = "Sistema Seguro" ]
+    SistemaEmOperacao [label = "Sistema em Operação"]
+
+    SistemaLigado -> SistemaDesligado [label = "Botoeira Desliga Precionada"]
+    SistemaSeguro -> SistemaDesligado [label = "Botoeira Desliga Precionada"]
+    SistemaEmOperacao -> SistemaDesligado [label = "Botoeira Desliga Precionada"]
+
+    SistemaLigado -> SistemaLigado [label = "Botoeira Parada de Emergência Ativa"]
+    SistemaSeguro -> SistemaLigado [label = "Botoeira Parada de Emergência Ativa"]
+    SistemaEmOperacao -> SistemaLigado [label = "Botoeira Parada de Emergência Ativa"]
+
+    SistemaEmOperacao -> SistemaSeguro [label = "Botoeira Parar Motor Precionada"]
+
+    SistemaSeguro -> SistemaEmOperacao [label = "Sensor Buffer Vazio"]
+}
+
