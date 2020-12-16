@@ -1,0 +1,15 @@
+\begin{tikzpicture}[node distance=0.5cm and 1cm,>=stealth',bend angle=45,auto]
+    \node [place,label=above:$P_1$] (p1) {};
+    \node [transitionV,label=above:$T_1$] (t1) [right= of p1] {}
+        edge[name=t1]   (p1);
+    \node [place,tokens=1,label=above:$P_2$] (p2) [above right=of t1] {}
+        edge[pre]   (t1);
+    \node [place,tokens=2,label=above:$P_3$] (p3) [below right=of t1] {}
+        edge[pre]   (t1);
+    \node [transitionV,label=above:$T_2$] (t2) [above right=of p3] {}
+        edge[pre]   (p2)
+        edge[pre]   (p3)
+        edge[post,out=-110,in=-50,looseness=2,overlay]  (p1);
+    \node [place,tokens=1, label=above:$P_4$] (p4) [above right=of t2] {}
+        edge[pre]   (t2);
+\end{tikzpicture}
