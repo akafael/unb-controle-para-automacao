@@ -27,6 +27,15 @@ struct Acionamentos
     uint8_t luzBuffer;
 };
 
+struct Entradas
+{
+    uint8_t botoeiraDesliga;
+    uint8_t botoeiraLiga;
+    uint8_t botoeiraEmergencia;
+    uint8_t sensorNivel;
+};
+
+
 void desligaSistema(struct Acionamentos *sistema)
 {
     sistema->velocidadeMotor = 0;
