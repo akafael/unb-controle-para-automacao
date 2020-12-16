@@ -1,0 +1,37 @@
+\begin{tikzpicture}[circuit plc ladder,thick]
+    \draw(0,0)  to [contact NO={info={$B_D$}}] ++(2,0)
+                to [contact NC={info={$B_L$}}] ++(2,0)
+                to [contact NC={info={$B_{PE}$}}] ++(2,0)
+                to [coil={info={$K_1$}}] ++(2,0);
+    \draw(0,-2) to [contact NO={info={$K_1$}}] ++(2,0)
+               -- (2,0);
+
+    \draw(0,-4) to [contact NO={info={$Sensor$}}] ++(2,0)
+                -- ++(4,0)
+                to [coil={info={$K_2$}}] ++(2,0);
+                
+    \draw(0,-6) to [contact NO={info={$K_1$}}] ++(2,0)
+                to [contact NC={info={$K_2$}}] ++(2,0)
+                -- ++(2,0)
+                to [coil={info={$K_3$}}] ++(2,0);
+                
+    \draw(0,-8) to [contact NO={info={$C_A$}}] ++(2,0)
+                -- ++(4,0)
+                to [coil={info={$K_4$}}] ++(2,0);
+    \draw(0,-9.5) to [contact NO={info={$C_B$}}] ++(2,0)
+                -- ++(4,0)
+                to [coil={info={$K_5$}}] ++(2,0);
+                
+    \draw(0,-11) to [contact NO={info={$K_3$}}] ++(2,0)
+                 to [contact NO={info={$K_4$}}] ++(2,0)
+                 to [contact NC={info={$K_5$}}] ++(2,0)
+                 -- ++(2,0);
+    \draw(4,-11) to [coil={info={Motor}}] ++(0,-2);
+    \draw(2,-13) -- ++(0,2);
+    \draw(2,-13) to [contact NC={info={$K_4$}}] ++(2,0)
+                 to [contact NO={info={$K_5$}}] ++(2,0)
+                 -- ++(0,2);
+% power rails
+    \draw(0,1) -- ++(0,-15);
+    \draw(8,1) -- ++(0,-15);
+\end{tikzpicture}

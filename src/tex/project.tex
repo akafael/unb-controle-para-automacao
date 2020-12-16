@@ -7,6 +7,7 @@
 
 \usepackage{tikz}
 \usetikzlibrary{arrows,shapes,automata,petri,positioning}
+\usetikzlibrary{circuits.plc.ladder}
 
 %\usepackage{circuitikz}
 
@@ -38,6 +39,14 @@
         minimum height=8mm,
         inner xsep=2pt
     }
+}
+
+\tikzset{
+    coil NA/.style={coil={#1,symbol={$/$}}},
+    every coil/.style={minimum size=2.4\tikzcircuitssizeunit,coil ladder curvature=0.5},
+    every coil S/.style={minimum size=2.4\tikzcircuitssizeunit,coil ladder curvature=0.5},
+    every coil R/.style={minimum size=2.4\tikzcircuitssizeunit,coil ladder curvature=0.5},
+    every coil NA/.style={minimum size=2.4\tikzcircuitssizeunit,coil ladder curvature=0.5}
 }
 % ----------------------------------~>ø<~---------------------------------------
 \begin{document}
@@ -86,7 +95,7 @@ Do ponto de vista de comportamento macro do sistema podemos descrever o sistema 
         \hline
         Desligado & Desligado & - \\
         Buffer Cheio & Desligado & $1$\\
-        Buffer Vazio & Piscando & $1$\\
+        Buffer Vazio & Piscando & $0$\\
         \hline
     \end{tabular}
     \caption{Caption}
@@ -139,28 +148,35 @@ Combinando o comportamento de ambos Automatos temos:
 
 \subsection{Modelagem por Rede de Petri}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
-    \begin{tikzpicture}[node distance=0.5cm and 1cm,>=stealth',bend angle=45,auto]
-        \node [place,label=above:$P_1$] (p1) {};
-        \node [transitionV,label=above:$T_1$] (t1) [right= of p1] {}
-            edge[name=t1]   (p1);
-        \node [place,tokens=1,label=above:$P_2$] (p2) [above right=of t1] {}
-            edge[pre]   (t1);
-        \node [place,tokens=2,label=above:$P_3$] (p3) [below right=of t1] {}
-            edge[pre]   (t1);
-        \node [transitionV,label=above:$T_2$] (t2) [above right=of p3] {}
-            edge[pre]   (p2)
-            edge[pre]   (p3)
-            edge[post,out=-110,in=-50,looseness=2,overlay]  (p1);
-        \node [place,tokens=1, label=above:$P_4$] (p4) [above right=of t2] {}
-            edge[pre]   (t2);
-    \end{tikzpicture}
+    \include{src/tex/tikz_model_petrinet}
     \caption{Caption}
     \label{fig:my_label}
 \end{figure}
 
 \subsection{Modelagem em Ladder}
+
+Para modelagem em ladder foi adotado como referência uma estratégia similar ao modelo em máquina de estados. A implementação foi dividida em 3 partes:
+
+\begin{enumerate}
+    \item Leitura entrada + Codificação estados
+    \item Decodificação estados
+    \item Acionamento
+\end{enumerate}
+
+Como forma de reduzir a quantidade de contadoras a representação dos estados em ladder foi codificada em binário a partir da associação das contatoras. Pelo modelo por automatos foram definidos 3 estados possíveis para o motor ( rotação sentido horário, sentido anti-horário e desligado ) e 2 estados possíveis para o buffer ( vazio e "não vazio" ). Com isto para representar esta informação dentro do sistema podemo usar 2 contadoras para o motor ( $2^2$ estados possíveis ) e uma contadora para o buffer ( 2 estados ).
+
+Uma vez definido a forma de codificação dos estados, foi definido a associação das entradas com cada "bit" da representação dos estados.
+
+Em seguida cada contatora foi conectada ao conjunto de acionamentos relacionados a aquela estado. Desta forma para fica bastante flexível adicionar mais acionamento em um mesmo estado e a representação em ladder fica bastante compacta.
+
+\begin{figure}[H]
+    \centering
+    \include{src/tex/tikz_model_ladder}
+    \caption{Diagrama Ladder}
+    \label{fig:my_label}
+\end{figure}
 
 \section{Conclusão}
 
@@ -180,6 +196,8 @@ Combinando o comportamento de ambos Automatos temos:
 %\nocite{matlabsymbolic}
 %\nocite{ogata2010modern}
 %\nocite{nise2012}
+
+% http://ctan.math.illinois.edu/graphics/pgf/contrib/tikz-ladder/doc/tikz-ladder-doc.pdf
 
 % ------------------------------------------------------------------------------
 \newpage
