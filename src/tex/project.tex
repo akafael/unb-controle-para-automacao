@@ -209,9 +209,21 @@ Em seguida cada contatora foi conectada ao conjunto de acionamentos relacionados
 
 %\inputminted[xleftmargin=15pt,linenos,frame=single,framesep=5pt,breaklines=true]{python}{../python/exsim6.py}
 
-%\newpage
 \subsection*{C}
-\inputminted[xleftmargin=15pt,linenos,frame=single,framesep=5pt,breaklines=true]{c}{../c/project.c}
+
+A partir do código fornecido pelo professor foram feitas algumas modificações para permitir a implementação da máquina de estados, conforme descrito em cada parte a seguir:
+
+\subsubsection*{Definição Estados e Eventos}
+\inputminted[xleftmargin=15pt,linenos,frame=single,framesep=5pt,breaklines=true]{c}{../c/state_machine/inc/state_machine.h}
+
+\newpage
+\subsubsection*{Definição Comportamento Interno}
+Foram acrescentados funções internas representando ações em um sistema real para facilitar os testes.
+\inputminted[xleftmargin=15pt,linenos,frame=single,framesep=5pt,breaklines=true]{c}{../c/state_machine/src/state_machine.c}
+
+\newpage
+\subsubsection*{Definição Testes}
+\inputminted[xleftmargin=15pt,linenos,frame=single,framesep=5pt,breaklines=true]{c}{../c/state_machine/src/test_1.c}
 
 \newpage
 \subsection*{Matlab}
