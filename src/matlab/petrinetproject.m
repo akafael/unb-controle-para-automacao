@@ -8,13 +8,31 @@ file_path = fileparts(mfilename('fullpath'));
 img_path = strcat(file_path,"/../tex/img/");
 dot_path = strcat(file_path,"/../dot/")
 
-x0 = [0 1 0];
+x0 = [1 1 1 0 0 0 0 0];
 
-t1 = [1 0 0];
-t2 = [0 1 0];
-t3 = [0 0 1];
+%% Transitions
+syms t0 ton tnoff tnpe tccw tcw t1non t1off t1pe t2non t2off t2pe;
+T = [t0 ton tnoff tnpe tccw tcw t1non t1off t1pe t2non t2off t2pe];
 
-A = [1 1 -1;-1 -1 1;0 -1 1];
+%% Places
+syms Pon Pnoff Pnpe Pcw Pccw Pon Poff Ppe;
+P = [Pon Pnoff Pnpe Pcw Pccw Pon Poff Ppe];
+
+%% Transition
+A = [-1 -1 -1  1  0  0  0  0;...
+      0  0  0 -1  1  0  0  0;...
+      0  0  0  1 -1  0  0  0;...
+      0  0  0 -1  0  1  0  0;...
+      0  0  0 -1  0  0  1  0;...
+      0  0  0 -1  0  0  0  1;...
+      0  0  0  0 -1  1  0  0;...
+      0  0  0  0 -1  0  1  0;...
+      0  0  0  0 -1  0  0  1;...
+      1  0  0  0  0 -1  0  0;...
+      0  1  0  0  0  0 -1  0;...
+      0  0  1  0  0  0  0 -1]
 
 filename = strcat(dot_path,'petrinet_tree.dot');
-Ba = dotpetree(x0,A,7,filename);
+Ba = dotpetree(x0,A,5,filename);
+
+T = [t0 ton tnoff tnpe tccw tcw t1non t1off t1pe t2non t2off t2pe];
