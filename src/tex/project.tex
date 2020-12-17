@@ -102,16 +102,16 @@ Do ponto de vista de comportamento macro do sistema podemos descrever o sistema 
     \label{tab:states_buffer}
 \end{table}
 
-A partir da tabela \ref{tab:states_buffer} podemos representar o comportamento buffer associado a leitura do sensor como
+Foi assumido que quando o sistema está desligado a leitura do sensor seria indefinida uma vez que não teria energia para transmitir a informação. A partir da tabela \ref{tab:states_buffer} podemos representar o comportamento buffer associado a leitura do sensor como
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\linewidth]{src/tex/img/automato_buffer.png}
-    \caption{Caption}
+    \includegraphics[width=0.4\linewidth]{src/tex/img/automato_buffer.png}
+    \caption{Representação comportamento Buffer}
     \label{fig:automato_buffer}
 \end{figure}
 
-Por outro lado do ponto de vista de controle do motor temos:
+Por outro lado do ponto de vista de controle do motor temos os seguintes estados:
 
 \begin{table}[H]
     \centering
@@ -120,40 +120,64 @@ Por outro lado do ponto de vista de controle do motor temos:
         Estado & $L_{s_1}$ & $L_{m_1}$ & $L_{m_2}$ & Motor \\
         \hline
         Motor Desligado & $0$ & $0$ & $0$ & Desligado\\
-        Ligado Sentido Horário & $1$ & $1$ & $0$ & Desligado\\
-        Ligado Sentido Anti-Horário & $1$ & $0$ & $1$ & Desligado\\
+        Ligado Sentido Horário & $1$ & $1$ & $0$ & Ligado\\
+        Ligado Sentido Anti-Horário & $1$ & $0$ & $1$ & Ligado\\
         \hline
     \end{tabular}
-    \caption{Caption}
+    \caption{Estados Acionamentos}
     \label{tab:states_motor}
 \end{table}
 
-A partir da tabela \ref{tab:states_motor} podemos o comportamento desejado do motor como
+A partir da tabela \ref{tab:states_motor} podemos modelar o comportamento desejado do motor como
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\linewidth]{src/tex/img/automato_motor.png}
-    \caption{Caption}
+    \caption{Modelo por Automatos do Comportamento para o Motor}
     \label{fig:automato_motor}
 \end{figure}
 
-Combinando o comportamento de ambos Automatos temos:
+De forma macro para o sistema completo teríamos
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\linewidth]{src/tex/img/automato.png}
-    \caption{Caption}
-    \label{fig:automato_sistemai }
+    \includegraphics[width=0.9\linewidth]{src/tex/img/automato_sistema.png}
+    \caption{Modelo Sistema}
+    \label{fig:automato_sistema}
 \end{figure}
+
+\subsubsection{Implementação em C}
+
+Para a implementação em C foi ajustado algumas coisas. No lugar de duas máquinas de estado referentes ao comportamento do buffer e do motor em paralelo, foi definido uma máquina de estados conjunta com 6 estados e 5 eventos. Para codificação do comportamento foi adotado uma matriz de transição apontando qual o próximo estado para todas as 30 possíveis combinações entre todos os eventos e estados. O código referente encontra-se em anexo.
 
 \subsection{Modelagem por Rede de Petri}
 
+A modelagem através de rede de petri foi feita tomando como referência as condições de acionamento e desligamento do motor. Partindo da unidade básica da rede de petri foi definido dois blocos com lógica complementar conforme mostrado na figura \ref{fig:petrinet}. O primeiro foi um bloco de E representando as condições para o sistema ligar a esquerda e a direita foi definido um bloco de OU representando as condições de desligamento do sistema. Ao meio foram definidos dois lugares representando as possibilidades do motor esta girando num sentido ou em outro. Com isto foi possível representar o mesmo comportamento da máquina de estados através da rede de petri porém com uma riqueza maior quanto a detecção dos eventos relacionados ao desligamento do sistema.
+
 \begin{figure}[H]
     \centering
-    \include{src/tex/tikz_model_petrinet}
-    \caption{Caption}
-    \label{fig:my_label}
+    \includegraphics[trim=2cm 8cm 4cm 8cm,clip,width=0.8\linewidth]{src/tex/img/petrinet_drawing.pdf}
+    \caption{Desenho Rede de Petri}
+    \label{fig:petrinet}
 \end{figure}
+
+Com isto foi definido como estado inicial
+
+\begin{equation}
+X_0 = \left[\begin{array}{cccccccc} 1 & 1 & 1 & 0 & 0 & 0 & 0 & 0 \end{array}\right]
+\end{equation}
+
+E seguinte matriz de transição:
+
+\begin{equation}
+A = \left[\begin{array}{cccccccc} -1 & -1 & -1 & 1 & 0 & 0 & 0 & 0\\ 0 & 0 & 0 & -1 & 1 & 0 & 0 & 0\\ 0 & 0 & 0 & 1 & -1 & 0 & 0 & 0\\ 0 & 0 & 0 & -1 & 0 & 1 & 0 & 0\\ 0 & 0 & 0 & -1 & 0 & 0 & 1 & 0\\ 0 & 0 & 0 & -1 & 0 & 0 & 0 & 1\\ 0 & 0 & 0 & 0 & -1 & 1 & 0 & 0\\ 0 & 0 & 0 & 0 & -1 & 0 & 1 & 0\\ 0 & 0 & 0 & 0 & -1 & 0 & 0 & 1\\ 1 & 0 & 0 & 0 & 0 & -1 & 0 & 0\\ 0 & 1 & 0 & 0 & 0 & 0 & -1 & 0\\ 0 & 0 & 1 & 0 & 0 & 0 & 0 & -1 \end{array}\right]
+\end{equation}
+
+Ao que é percebido que a representação por rede de petri acaba implicando em uma quantidade maior de recursos consumidos computacionalmente para uma mesma representação. Foram necessárias 12 transições e 8 lugares para representar o comportamento em comparação com 6 estados e 5 eventos.
+
+\subsubsection{Implementação em Matlab}
+
+Dado a facilidade na representação e no uso de operação com matrizes no matlab foram implementados as rotinas para avaliar se determinada transição está ativa e também a possibilidade de gerar um ramo completo a partir de uma sequencia de transições.
 
 \subsection{Modelagem em Ladder}
 
@@ -169,16 +193,20 @@ Como forma de reduzir a quantidade de contadoras a representação dos estados e
 
 Uma vez definido a forma de codificação dos estados, foi definido a associação das entradas com cada "bit" da representação dos estados.
 
-Em seguida cada contatora foi conectada ao conjunto de acionamentos relacionados a aquela estado. Desta forma para fica bastante flexível adicionar mais acionamento em um mesmo estado e a representação em ladder fica bastante compacta.
+Em seguida cada contatora foi conectada ao conjunto de acionamentos relacionados a aquela estado. Desta forma para fica bastante flexível adicionar mais acionamento em um mesmo estado e a representação em ladder fica bastante compacta. No entanto esta representação não foi simulada e com isto pode não refletir o comportamento desejado ou não ser possível a inserção em uma CLP.
 
 \begin{figure}[H]
     \centering
     \include{src/tex/tikz_model_ladder}
-    \caption{Diagrama Ladder}
+    \caption{Diagrama Ladder sistema}
     \label{fig:my_label}
 \end{figure}
 
 \section{Conclusão}
+
+Explorar diferentes representação usando os modelos por automatos, rede de petri e ladder permitiu um maior aprendizado sobre as particularidades de cada formato. Foi percebido que em muitos casos é possível o dialogo entre as representação, uma vez foi utilizado lógica boleana com apoio para os 3 projetos, porém a transposição entre os diferentes modelos não foi imediata.
+
+A codificação em Linguagem C acabou ficando um pouco confusa. Embora tenha facilitado os testes de diferentes cenários de forma rápida adaptar a máquina de estados ao simulador acabou acarretando em um custo a mais na implementação.
 
 % ------------------------------------------------------------------------------
 \newpage
