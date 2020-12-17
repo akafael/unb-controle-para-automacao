@@ -1,15 +1,37 @@
 \begin{tikzpicture}[node distance=0.5cm and 1cm,>=stealth',bend angle=45,auto]
-    \node [place,label=above:$P_1$] (p1) {};
-    \node [transitionV,label=above:$T_1$] (t1) [right= of p1] {}
-        edge[name=t1]   (p1);
-    \node [place,tokens=1,label=above:$P_2$] (p2) [above right=of t1] {}
+    \node [place,tokens=1,label=above:$P_{ON}$] (p_on) {};
+    \node [place,tokens=1,label=above:$P_{\bar{PE}}$] (p_npe) [above= of p_on] {};
+    \node [place,tokens=1,label=above:$P_{\bar{OFF}}$] (p_noff) [below= of p_on] {};
+    
+    \node [transitionV,label=above:$T_0$] (t1) [right= of p_on] {}
+        edge[pre]   (p_on) 
+        edge[pre]   (p_npe)
+        edge[pre]   (p_noff);
+    
+    \node [place,label=above:$P_2$] (p2) [above right=of t1] {}
+    \node [place,label=above:$P_3$] (p3) [right=of t1] {}
         edge[pre]   (t1);
-    \node [place,tokens=2,label=above:$P_3$] (p3) [below right=of t1] {}
-        edge[pre]   (t1);
-    \node [transitionV,label=above:$T_2$] (t2) [above right=of p3] {}
+    
+    
+    \node [transitionH,label=above:$T_2$] (t2) [right=of p3] {}
         edge[pre]   (p2)
-        edge[pre]   (p3)
-        edge[post,out=-110,in=-50,looseness=2,overlay]  (p1);
-    \node [place,tokens=1, label=above:$P_4$] (p4) [above right=of t2] {}
-        edge[pre]   (t2);
+        edge[pre]   (p3);
+    
+    \node [transitionV,label=above:$T_2$] (t2) [right=of p3] {}
+        edge[pre]   (p2)
+        edge[pre]   (p3);
+        
+    \node [place,label=above:$P_{\bar{ON}}$] (p_non) [below right= of t2]{};
+    \node [place,label=above:$P_{PE}$]       (p_pe)  [above= of p_non] {};
+    \node [place,label=above:$P_{OFF}$]      (p_off) [below= of p_non] {};
+    
+    \node [transitionV,label=above:$T_{\bar{PE}}$] (t_npe) [below=of p3] {}
+        edge[pre]   (p_pe)
+        edge[post]   (p_npe);
+    \node [transitionV,label=above:$T_{ON}$] (t_non) [below=of t_npe] {}
+        edge[pre]   (p_non)
+        edge[post]   (p_on);
+    \node [transitionV,label=above:$T_{\bar{OFF}}$] (t_off) [below=of t_non] {}
+        edge[pre]   (p_off)
+        edge[post]   (p_noff);
 \end{tikzpicture}
