@@ -1,6 +1,6 @@
 # Controle Para Automação
 
-Projeto final do curso de Instrumentação de Controle.
+Projeto final do curso de Controle para Automação.
 
 ## Descrição das Pastas
 
